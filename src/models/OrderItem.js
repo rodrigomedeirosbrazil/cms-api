@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const OrderItem = sequelize.define('orders_items', {
+  const OrderItem = sequelize.define('OrderItem', {
     value: {
       type: DataTypes.DECIMAL(10, 2),
       validate: {

@@ -1,13 +1,8 @@
 const { GraphQLServer } = require('graphql-yoga');
-const path = require('path');
-const resolvers = require('./resolvers');
-
+const schema = require('./graphql');
 const PORT = process.env.PORT || 5000;
 
-const server = new GraphQLServer({
-  typeDefs: path.resolve(__dirname, 'schema.graphql'),
-  resolvers
-});
+const server = new GraphQLServer({ schema: schema });
 
 const serverOptions = {
   port: PORT

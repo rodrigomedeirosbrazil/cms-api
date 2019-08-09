@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Order = sequelize.define('orders', {
+  const Order = sequelize.define('Order', {
     name: {
       type: DataTypes.STRING
     },
@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     active: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
       default: true
     }
   });

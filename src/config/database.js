@@ -29,9 +29,9 @@ Order.belongsTo(Customer);
 Order.belongsToMany(Item, { through: OrderItem });
 Item.belongsToMany(Order, { through: OrderItem });
 
-sequelize.sync({ force: true }).then(() => {
-  console.log('Database & tables created!');
-});
+// sequelize.sync({ force: true }).then(() => {
+//   console.log('Database & tables created!');
+// });
 
 module.exports = {
   User,

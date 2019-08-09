@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Item = sequelize.define('items', {
+  const Item = sequelize.define('Item', {
     name: {
       type: DataTypes.STRING
     },
@@ -39,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     active: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
       default: true
     }
   });
