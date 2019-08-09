@@ -10,12 +10,12 @@ module.exports = `
     active: Boolean
 }
 
-  type Query {
+  extend type Query {
       customers: [Customer!]!
       customer(id: ID!) : Customer
   }
 
-  type Mutation {
+  extend type Mutation {
       createCustomer(name: String!, email: String, address: String, city: String, state: String, zip: String, active: Boolean = true): Customer
       updateCustomer(id: ID!, name: String, email: String, address: String, city: String, state: String, zip: String, active: Boolean = true): Customer
   }
