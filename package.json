@@ -1,0 +1,15 @@
+{
+  "name": "cms-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "graphql-yoga": "^1.18.1",
+    "pg": "^7.12.0",
+    "sequelize": "^5.12.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0"
+  }
+}
