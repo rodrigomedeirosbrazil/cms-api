@@ -6,8 +6,20 @@ module.exports = {
     customer: (_, { id }) => Customer.findOne({ where: { id: id } })
   },
   Mutation: {
-    createCustomer: (_, { name, email, address, city, state, zip, active }) =>
-      Customer.create({ name, email, address, city, state, zip, active }),
+    createCustomer: (
+      _,
+      { name, UserId, email, address, city, state, zip, active }
+    ) =>
+      Customer.create({
+        name,
+        UserId,
+        email,
+        address,
+        city,
+        state,
+        zip,
+        active
+      }),
     updateCustomer: async (
       _,
       { id, name, email, address, city, state, zip, active }

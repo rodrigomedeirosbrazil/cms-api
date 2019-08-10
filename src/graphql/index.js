@@ -2,9 +2,11 @@ const { makeExecutableSchema } = require('graphql-tools');
 const { merge } = require('lodash');
 
 const UserSchema = require('./schema/User');
+const AuthSchema = require('./schema/Auth');
 const CustomerSchema = require('./schema/Customer');
 
 const UserResolver = require('./resolvers/User');
+const AuthResolver = require('./resolvers/Auth');
 const CustomerResolver = require('./resolvers/Customer');
 
 const Query = `
@@ -19,9 +21,9 @@ const Mutation = `
   }
 `;
 
-const resolvers = merge(UserResolver, CustomerResolver);
+const resolvers = merge(UserResolver, AuthResolver, CustomerResolver);
 const schema = makeExecutableSchema({
-  typeDefs: [Query, Mutation, UserSchema, CustomerSchema],
+  typeDefs: [Query, Mutation, UserSchema, AuthSchema, CustomerSchema],
   resolvers: resolvers
 });
 

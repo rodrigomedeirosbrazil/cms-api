@@ -1,6 +1,7 @@
 module.exports = `
   type Customer {
     id: ID!
+    UserId: ID!
     name: String!
     email: String
     address: String
@@ -16,7 +17,7 @@ module.exports = `
   }
 
   extend type Mutation {
-      createCustomer(name: String!, email: String, address: String, city: String, state: String, zip: String, active: Boolean = true): Customer
+      createCustomer(name: String!, UserId: ID!, email: String, address: String, city: String, state: String, zip: String, active: Boolean = true): Customer
       updateCustomer(id: ID!, name: String, email: String, address: String, city: String, state: String, zip: String, active: Boolean = true): Customer
   }
 `;
