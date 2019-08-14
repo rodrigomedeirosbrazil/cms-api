@@ -27,6 +27,7 @@ const isAuthenticated = rule()(async (parent, args, ctx, info) => {
 
     token = jwt.verify(authorization, 'secretKey');
   } catch (e) {
+    console.log(e);
     return false;
   }
   return true;
@@ -35,12 +36,8 @@ const isAuthenticated = rule()(async (parent, args, ctx, info) => {
 // Permissions
 
 const permissions = shield({
-  Query: {
-    users: isAuthenticated,
-    customers: isAuthenticated,
-    customers: isAuthenticated,
-    customers: isAuthenticated
-  }
+  User: isAuthenticated,
+  Customer: isAuthenticated
 });
 
 module.exports = {
