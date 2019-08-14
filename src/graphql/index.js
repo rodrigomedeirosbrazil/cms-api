@@ -32,6 +32,7 @@ const resolvers = merge(
   OrderResolver,
   ItemResolver
 );
+
 const schema = makeExecutableSchema({
   typeDefs: [
     Query,
