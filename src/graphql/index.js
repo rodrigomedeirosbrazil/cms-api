@@ -5,11 +5,13 @@ const UserSchema = require('./schema/User');
 const AuthSchema = require('./schema/Auth');
 const CustomerSchema = require('./schema/Customer');
 const OrderSchema = require('./schema/Order');
+const ItemSchema = require('./schema/Item');
 
 const UserResolver = require('./resolvers/User');
 const AuthResolver = require('./resolvers/Auth');
 const CustomerResolver = require('./resolvers/Customer');
 const OrderResolver = require('./resolvers/Order');
+const ItemResolver = require('./resolvers/Item');
 
 const Query = `
   type Query {
@@ -27,7 +29,8 @@ const resolvers = merge(
   UserResolver,
   AuthResolver,
   CustomerResolver,
-  OrderResolver
+  OrderResolver,
+  ItemResolver
 );
 const schema = makeExecutableSchema({
   typeDefs: [
@@ -36,7 +39,8 @@ const schema = makeExecutableSchema({
     UserSchema,
     AuthSchema,
     CustomerSchema,
-    OrderSchema
+    OrderSchema,
+    ItemSchema
   ],
   resolvers: resolvers
 });

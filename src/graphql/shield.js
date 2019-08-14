@@ -38,7 +38,8 @@ const isAuthenticated = rule()(async (parent, args, ctx, info) => {
 const permissions = shield({
   User: isAuthenticated,
   Customer: isAuthenticated,
-  Order: isAuthenticated
+  Order: isAuthenticated,
+  Item: isAuthenticated,
 });
 
 module.exports = {
