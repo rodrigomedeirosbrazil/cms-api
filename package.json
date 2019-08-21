@@ -1,13 +1,16 @@
 {
   "name": "cms-api",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "A MedeirosTEC CMS system",
+  "main": "src/index.js",
   "license": "MIT",
+  "author": "Rodrigo Medeiros",
   "scripts": {
-    "devserver": "./node_modules/.bin/nodemon src/index.js"
+    "devserver": "./node_modules/.bin/nodemon src/index.js",
+    "start": "node src/index.js"
   },
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcryptjs": "^2.4.3",
     "graphql-shield": "^6.0.4",
     "graphql-yoga": "^1.18.1",
     "jsonwebtoken": "^8.5.1",
