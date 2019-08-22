@@ -20,7 +20,6 @@ module.exports = `
 
   extend type Mutation {
       createItem(
-        UserId: ID!
         name: String!,
         description: String,
         value: Float!,
