@@ -1,31 +1,27 @@
 const { User } = require('../config/database');
 
-const getUsers = async function() {
+const getUsers = function() {
   return User.findAll();
 };
 
-const getUser = async function(id) {
+const getUser = function(id) {
   return User.findOne({ where: { id: id } });
 };
 
-const CreateUser = async function(name, email, password, active) {
-  const user = await User.create({ name, email, password, active });
-  if (!user) throw Error('User not found');
-  return user;
+const CreateUser = function(params) {
+  return User.create(params);
 };
 
-const UpdateUser = async function(id, name, email, password, active) {
-  const user = await User.findOne({ where: { id: id } });
-  if (!user) {
-    throw Error(`User not updated. id: ${id}`);
-  }
-  name && (user.name = name);
-  email && (user.email = email);
-  password && (user.password = password);
-  active && (user.active = active);
-  user.save();
-
-  return user;
+const UpdateUser = async function(params) {
+  let res = null;
+  await User.update(params, {
+    where: { id: params.id },
+    limit: 1,
+    returning: true
+  }).then(function([rowsUpdated, [updatedUser]]) {
+    res = updatedUser;
+  });
+  return res;
 };
 
 module.exports = {

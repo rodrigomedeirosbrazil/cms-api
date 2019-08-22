@@ -11,11 +11,11 @@ module.exports = {
     user: (_, { id }) => getUser(id)
   },
   Mutation: {
-    createUser: (_, { name, email, password, active }) => {
-      return CreateUser(name, email, password, active);
+    createUser: (_, params) => {
+      return CreateUser(params);
     },
-    updateUser: async (_, { id, name, email, password, active }) => {
-      return UpdateUser(id, name, email, password, active);
+    updateUser: async (_, params) => {
+      return UpdateUser(params);
     }
   }
 };

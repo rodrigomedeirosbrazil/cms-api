@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "Rodrigo Medeiros",
   "scripts": {
-    "devserver": "./node_modules/.bin/nodemon src/index.js",
+    "devstart": "./node_modules/.bin/nodemon src/index.js",
     "start": "node src/index.js"
   },
   "dependencies": {
