@@ -7,15 +7,15 @@ const {
 
 module.exports = {
   Query: {
-    customers: () => getCustomers(),
-    customer: (_, { id }) => getCustomer(id)
+    customers: (_, __, req) => getCustomers(req),
+    customer: (_, { id }, req) => getCustomer(req, id)
   },
   Mutation: {
-    createCustomer: (_, params) => {
-      return createCustomer(params);
+    createCustomer: (_, params, req) => {
+      return createCustomer(params, req);
     },
-    updateCustomer: async (_, params) => {
-      return updateCustomer(params);
+    updateCustomer: async (_, params, req) => {
+      return updateCustomer(params, req);
     }
   }
 };
