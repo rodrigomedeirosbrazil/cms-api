@@ -8,7 +8,7 @@ const {
 module.exports = {
   Query: {
     customers: (_, __, req) => getCustomers(req),
-    customer: (_, { id }, req) => getCustomer(req, id)
+    customer: (_, { id }, req) => getCustomer(id, req)
   },
   Mutation: {
     createCustomer: (_, params, req) => {
