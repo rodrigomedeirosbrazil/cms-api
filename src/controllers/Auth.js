@@ -1,3 +1,4 @@
+require('dotenv/config');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../config/database');
@@ -7,9 +8,13 @@ const Login = async function(email, password) {
   if (!user) throw Error('User not found');
 
   if (await bcrypt.compareSync(password, user.password)) {
-    const token = jwt.sign({ id: user.id }, 'secretKey', {
-      expiresIn: '6h'
-    });
+    const token = jwt.sign(
+      { id: user.id },
+      process.env.JWT_KEY || 'secretKey',
+      {
+        expiresIn: '6h'
+      }
+    );
     return token;
   }
 

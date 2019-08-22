@@ -1,3 +1,4 @@
+require('dotenv/config');
 const { rule, shield } = require('graphql-shield');
 const jwt = require('jsonwebtoken');
 
@@ -9,7 +10,7 @@ function checkUser(req) {
       ''
     );
 
-    token = jwt.verify(authorization, 'secretKey');
+    token = jwt.verify(authorization, process.env.JWT_KEY || 'secretKey');
   } catch (e) {
     return null;
   }
@@ -25,7 +26,7 @@ const isAuthenticated = rule()(async (parent, args, ctx, info) => {
       ''
     );
 
-    token = jwt.verify(authorization, 'secretKey');
+    token = jwt.verify(authorization, process.env.JWT_KEY || 'secretKey');
   } catch (e) {
     console.log(e);
     return false;
@@ -39,7 +40,7 @@ const permissions = shield({
   User: isAuthenticated,
   Customer: isAuthenticated,
   Order: isAuthenticated,
-  Item: isAuthenticated,
+  Item: isAuthenticated
 });
 
 module.exports = {
