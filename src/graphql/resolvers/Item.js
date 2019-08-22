@@ -7,15 +7,15 @@ const {
 
 module.exports = {
   Query: {
-    items: () => getItems(),
-    item: (_, { id }) => getItem(id)
+    items: (_, __, req) => getItems(req),
+    item: (_, { id }, req) => getItem(id, req)
   },
   Mutation: {
-    createItem: (_, params) => {
-      return createItem(params);
+    createItem: (_, params, req) => {
+      return createItem(params, req);
     },
-    updateItem: async (_, params) => {
-      return updateItem(params);
+    updateItem: async (_, params, req) => {
+      return updateItem(params, req);
     }
   }
 };
