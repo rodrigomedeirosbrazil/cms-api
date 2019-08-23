@@ -32,6 +32,25 @@ const updateOrder = async function(params) {
   }).then(function([rowsUpdated, [updatedOrder]]) {
     res = updatedOrder;
   });
+
+  if (params.items) {
+    OrderItem.destroy({
+      where: {
+        OrderId: params.id
+      }
+    });
+    params.items.map(item => {
+      OrderItem.create({
+        value: item.value,
+        value_repo: item.value_repo,
+        quantity: item.quantity,
+        OrderId: params.id,
+        ItemId: item.id
+      });
+      return true;
+    });
+  }
+
   return res;
 };
 

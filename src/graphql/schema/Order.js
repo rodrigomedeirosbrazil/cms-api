@@ -23,6 +23,6 @@ module.exports = `
 
   extend type Mutation {
       createOrder(name: String, CustomerId: ID!, items: [CreateOrderItem!]!, value: Float!, date_pickup: String, date_back: String, active: Boolean = true): Order
-      updateOrder(id: ID!, name: String, value: Float!, date_pickup: String, date_back: String, active: Boolean = true): Order
+      updateOrder(id: ID!, name: String, items: [CreateOrderItem!], value: Float, date_pickup: String, date_back: String, active: Boolean = true): Order
   }
 `;
