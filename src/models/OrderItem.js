@@ -21,7 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     quantity: {
       type: DataTypes.INTEGER,
       default: 0
-    }
+    },
+    OrderId: DataTypes.INTEGER,
+    ItemId: DataTypes.INTEGER
   });
 
   return OrderItem;

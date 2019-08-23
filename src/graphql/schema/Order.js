@@ -7,7 +7,14 @@ module.exports = `
     date_pickup: String
     date_back: String
     active: Boolean
-}
+  }
+
+  input CreateOrderItem {
+    id: ID!
+    value: Float!
+    value_repo: Float
+    quantity: Int
+  }
 
   extend type Query {
       orders: [Order!]!
@@ -15,7 +22,7 @@ module.exports = `
   }
 
   extend type Mutation {
-      createOrder(name: String, CustomerId: ID!, value: Float!, date_pickup: String, date_back: String, active: Boolean = true): Order
+      createOrder(name: String, CustomerId: ID!, items: [CreateOrderItem!]!, value: Float!, date_pickup: String, date_back: String, active: Boolean = true): Order
       updateOrder(id: ID!, name: String, value: Float!, date_pickup: String, date_back: String, active: Boolean = true): Order
   }
 `;

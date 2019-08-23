@@ -25,10 +25,8 @@ const isAuthenticated = rule()(async (parent, args, ctx, info) => {
       'Bearer ',
       ''
     );
-
     token = jwt.verify(authorization, process.env.JWT_KEY || 'secretKey');
   } catch (e) {
-    console.log(e);
     return false;
   }
   return true;

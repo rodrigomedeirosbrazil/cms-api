@@ -1,4 +1,4 @@
-const { Order } = require('../config/database');
+const { Order, OrderItem } = require('../config/database');
 
 const getOrders = function() {
   return Order.findAll();
@@ -8,8 +8,19 @@ const getOrder = function(id) {
   return Order.findOne({ where: { id: id } });
 };
 
-const createOrder = function(params) {
-  return Order.create(params);
+const createOrder = async function(params) {
+  const order = await Order.create(params);
+  params.items.map(item => {
+    OrderItem.create({
+      value: item.value,
+      value_repo: item.value_repo,
+      quantity: item.quantity,
+      OrderId: order.id,
+      ItemId: item.id
+    });
+    return true;
+  });
+  return order;
 };
 
 const updateOrder = async function(params) {

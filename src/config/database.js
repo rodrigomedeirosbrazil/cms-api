@@ -29,17 +29,19 @@ const Order = OrderModel(sequelize, Sequelize);
 const Item = ItemModel(sequelize, Sequelize);
 const OrderItem = OrderItemModel(sequelize, Sequelize);
 
-User.hasMany(Customer);
-Customer.belongsTo(User);
-Customer.hasMany(Order);
-Order.belongsTo(Customer);
-Order.belongsToMany(Item, { through: OrderItem });
-Item.belongsToMany(Order, { through: OrderItem });
-Item.belongsTo(User);
+User.Customers = User.hasMany(Customer);
+Customer.User = Customer.belongsTo(User);
+Customer.Orders = Customer.hasMany(Order);
+Order.Customer = Order.belongsTo(Customer);
+Item.User = Item.belongsTo(User);
+// Order.belongsToMany(Item, { through: OrderItem });
+// Item.belongsToMany(Order, { through: OrderItem });
 
-// sequelize.sync({ force: true }).then(() => {
-//   console.log('Database & tables created!');
-// });
+if (process.env.CREATE_DB) {
+  sequelize.sync({ force: true }).then(() => {
+    console.log('Database & tables created!');
+  });
+}
 
 module.exports = {
   User,
