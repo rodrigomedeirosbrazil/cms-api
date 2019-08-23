@@ -1,0 +1,6 @@
+{
+  "name": "cms-medeirostec-api",
+  "description": "A MedeirosTEC CMS",
+  "image": "heroku/nodejs",
+  "addons": []
+}

@@ -1,7 +1,7 @@
 {
-  "name": "cms-api",
+  "name": "cms-medeirostec-api",
   "version": "0.1.0",
-  "description": "A MedeirosTEC CMS system",
+  "description": "A MedeirosTEC CMS",
   "main": "src/index.js",
   "license": "MIT",
   "author": "Rodrigo Medeiros",
