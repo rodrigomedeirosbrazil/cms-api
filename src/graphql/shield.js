@@ -10,7 +10,7 @@ function checkUser(req) {
       ''
     );
 
-    token = jwt.verify(authorization, process.env.JWT_KEY || 'secretKey');
+    token = jwt.verify(authorization, process.env.JWT_KEY);
   } catch (e) {
     return null;
   }
@@ -25,7 +25,7 @@ const isAuthenticated = rule()(async (parent, args, ctx, info) => {
       'Bearer ',
       ''
     );
-    token = jwt.verify(authorization, process.env.JWT_KEY || 'secretKey');
+    token = jwt.verify(authorization, process.env.JWT_KEY);
   } catch (e) {
     return false;
   }
