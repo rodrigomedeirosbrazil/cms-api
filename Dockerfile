@@ -1,4 +1,3 @@
-# Define the docker hub image: https://hub.docker.com/_/node/
 FROM node:alpine
 
 WORKDIR /usr/app
@@ -10,5 +9,4 @@ RUN yarn install && yarn cache clean
 # Bundle app source
 COPY . .
 
-EXPOSE 5000
 CMD [ "yarn", "start" ]

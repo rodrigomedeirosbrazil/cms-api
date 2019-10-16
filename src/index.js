@@ -1,17 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server')
 
 const PORT = process.env.PORT || 5000;
-// const schema = require("./graphql");
-// const { checkUser, permissions } = require("./graphql/shield");
-
-// const server = new GraphQLServer({
-//   schema: schema,
-//   middlewares: [permissions],
-//   context: req => ({
-//     ...req,
-//     userLogged: checkUser(req)
-//   })
-// });
 
 const serverOptions = {
   port: PORT
@@ -26,7 +15,7 @@ const typeDefs = gql`
     me: User!
   }
   type Mutation {
-    signup(email: String, password: String): AuthPayload!
+    signup(name: String, email: String, password: String): AuthPayload!
     login(email: String, password: String): AuthPayload!
   }
   type AuthPayload {

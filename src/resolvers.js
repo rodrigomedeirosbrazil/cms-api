@@ -17,8 +17,8 @@ const LOGIN = `
 `
 
 const SIGNUP = `
-  mutation($email: String, $password: String) {
-    insert_users(objects: { email: $email, password: $password }) { returning { id }}
+  mutation($name: String, $email: String, $password: String) {
+    insert_users(objects: { name: $name, email: $email, password: $password }) { returning { id }}
   }
 `
 
@@ -33,7 +33,7 @@ const resolvers = {
     me: async (_, args, req) => {
       if (req.userId) {
         const user = await graphql.request(ME, { id: req.userId }).then(data => {
-          return data.user[0]
+          return data.users[0]
         })
         return { ...user }
       } else {
@@ -42,11 +42,11 @@ const resolvers = {
     }
   },
   Mutation: {
-    signup: async (_, { email, password }) => {
+    signup: async (_, { name, email, password }) => {
       const hashedPassword = await bcrypt.hash(password, 10)
 
-      const user = await graphql.request(SIGNUP, { email, password: hashedPassword }).then(data => {
-        return data.insert_user.returning[0]
+      const user = await graphql.request(SIGNUP, { name, email, password: hashedPassword }).then(data => {
+        return data.insert_users.returning[0]
       })
 
       const token = jwt.sign({
@@ -56,7 +56,7 @@ const resolvers = {
           'x-hasura-default-role': 'user',
           'x-hasura-allowed-roles': ['user']
         }
-      }, process.env.JWT_SECRET)
+      }, process.env.JWT_KEY)
 
       return { token }
     },
@@ -77,7 +77,7 @@ const resolvers = {
             'x-hasura-default-role': 'user',
             'x-hasura-allowed-roles': ['user']
           }
-        }, process.env.JWT_SECRET)
+        }, process.env.JWT_KEY)
 
         return { token }
       } else {
