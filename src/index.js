@@ -1,40 +1,41 @@
-const { ApolloServer, gql } = require('apollo-server')
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const authRoute = require('./routes/auth');
 
 const PORT = process.env.PORT || 5000;
 
-const serverOptions = {
-  port: PORT
-};
+const app = express();
 
-const { resolvers } = require('./resolvers')
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
-const { getUserId } = require('./utils')
+app.use('/auth', authRoute);
 
-const typeDefs = gql`
-  type Query {
-    me: User!
-  }
-  type Mutation {
-    signup(name: String, email: String, password: String): AuthPayload!
-    login(email: String, password: String): AuthPayload!
-  }
-  type AuthPayload {
-    token: String
-  }
-  type User {
-    email: String
-  }
-`
+app.get('/favicon.ico', function(req, res) {
+  res.sendStatus(204);
+});
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: ({ req }) => {
-    const userId = getUserId(req)
-    return { ...req, userId }
-  }
-})
+// express doesn't consider not found 404 as an error so we need to handle 404 it explicitly
+// handle 404 error
+app.use(function(req, res, next) {
+  let err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
-server.listen(serverOptions).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`)
-})
+// handle errors
+app.use(function(err, req, res, next) {
+	console.log(err);
+
+  if(err.status === 404)
+  	res.status(404).json({message: "Not found"});
+  else
+    res.status(500).json({message: "Something looks wrong!"});
+
+});
+
+app.listen(PORT, function(){
+	console.log('Server listening on port '+PORT);
+});
