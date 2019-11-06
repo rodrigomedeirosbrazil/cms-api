@@ -24,7 +24,7 @@ const login = async function(req, res, next) {
     const token = jwt.sign({
       userId: user.id,
       'https://hasura.io/jwt/claims': {
-        'x-hasura-user-id': user.id,
+        'x-hasura-user-id': user.id.toString(),
         'x-hasura-default-role': 'user',
         'x-hasura-allowed-roles': ['user']
       }
@@ -67,7 +67,7 @@ const signup = async function(req, res, next) {
   const token = jwt.sign({
     userId: user.id,
     'https://hasura.io/jwt/claims': {
-      'x-hasura-user-id': user.id,
+      'x-hasura-user-id': user.id.toString(),
       'x-hasura-default-role': 'user',
       'x-hasura-allowed-roles': ['user']
     }
