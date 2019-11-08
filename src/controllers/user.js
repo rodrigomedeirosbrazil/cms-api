@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const uuid = require('uuid/v4');
 
 const mail = require("../config/mail");
 const graphql = require('../config/graphql');
@@ -16,7 +17,7 @@ const login = async function(req, res, next) {
     return data.users[0];
   })
 
-  if (!user) res.status(404).json({message: "User not found"});
+  if (!user) res.status(404).json({message: "Email não encontrado"});
 
   const valid = await bcrypt.compare(password, user.password)
 
@@ -24,7 +25,7 @@ const login = async function(req, res, next) {
     const token = jwt.sign({
       userId: user.id,
       'https://hasura.io/jwt/claims': {
-        'x-hasura-user-id': user.id.toString(),
+        'x-hasura-user-id': user.id,
         'x-hasura-default-role': 'user',
         'x-hasura-allowed-roles': ['user']
       }
@@ -42,7 +43,7 @@ const login = async function(req, res, next) {
       }
     );
   } else {
-    res.status(404).json({message: "Invalid password"});
+    res.status(404).json({message: "Senha inválida"});
   }
 }
 
@@ -50,19 +51,25 @@ const signup = async function(req, res, next) {
   const { name, email, password } = req.body;
 
   const SIGNUP = `
-    mutation($name: String, $email: String, $password: String) {
-      insert_users(objects: { name: $name, email: $email, password: $password }) { returning { id }}
+    mutation($id: uuid!, $name: String!, $email: String!, $password: String!) {
+      insert_users(objects: { id: $id, name: $name, email: $email, password: $password }) { returning { id }}
     }
   `
-
   const hashedPassword = await bcrypt.hash(password, 10)
+  const id = uuid();
 
   //TODO: Validation!
-  const user = await graphql.request(SIGNUP, { name, email, password: hashedPassword }).then(data => {
-    return data.insert_users.returning[0]
-  })
+  let user = null;
+  try {
+    user = await graphql.request(SIGNUP, { id, name, email, password: hashedPassword }).then(data => {
+      return data.insert_users.returning[0]
+    })
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({ message: "Erro durante a requisição" });
+  }
 
-  if (!user) res.status(404).json({message: "Signup fail!"});
+  if (!user) res.status(404).json({message: "Login incorreto."});
 
   const token = jwt.sign({
     userId: user.id,
@@ -113,7 +120,7 @@ const getUserId = (req) => {
 
 const me = async function(req, res, next) {
   const ME = `
-    query($id: Int) {
+    query($id: String) {
       users(where:{id: {_eq: $id}}) { id, name, email }
     }
   `
@@ -133,7 +140,7 @@ const me = async function(req, res, next) {
     );
 
   } else {
-    res.status(404).json({ message: "Not logged in" });
+    res.status(404).json({ message: "Não logado" });
   }
 
 
