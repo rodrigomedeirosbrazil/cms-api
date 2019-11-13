@@ -109,6 +109,160 @@ const signup = async function(req, res, next) {
   );
 }
 
+const recoveryPassword = async function (req, res, next) {
+  const { email } = req.body;
+
+  const USER = `
+    query($email: String) {
+      users(where:{email: {_eq: $email}}) { id }
+    }
+  `
+
+  const SET_USER_PASSWORD = `
+    mutation($id: uuid!, $password: String!) {
+      update_users(
+        where: {
+          id: { _eq: $id }
+        },
+        _set: {
+          password: $password
+        }
+      ) { affected_rows }
+    }
+  `
+  let user = null;
+
+  try {
+    user = await graphql.request(USER, { email }).then(data => {
+      return data.users[0];
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Erro durante a requisição" });
+  }
+
+  if (!user) res.status(404).json({ message: "Email não encontrado" });
+
+  const newPassword = uuid();
+  const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+  try {
+    await graphql.request(SET_USER_PASSWORD, { id: user.id, password: hashedPassword }).then( () => {
+      return true;
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Erro durante a requisição" });
+  }
+
+  const newEmail = {
+    from: "CMS MedeirosTEC <contato@medeirostec.com.br>",
+    to: email,
+    subject: "Recuperação da senha",
+    text:
+      `Você pediu a recuperação da senha, segue a senha que foi gerada:
+      ${newPassword}
+      `
+  };
+
+  mail.sendMail(newEmail, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email enviado: " + info.response);
+    }
+  });
+
+  return res.status(200).json({ message: "Email enviado!" });
+}
+
+const changePassword = async function (req, res, next) {
+  const { oldPassword, newPassword } = req.body;
+  const authHeader = req.headers.authorization;
+  let id = null;
+
+  if (!authHeader)
+    return res.status(401).send({ error: 'Você precisa estar logado no sistema.' });
+
+  const parts = authHeader.split(' ');
+
+  if (!parts.length === 2)
+    return res.status(401).send({ error: 'Token error' });
+
+  const [scheme, token] = parts;
+
+  if (!/^Bearer$/i.test(scheme))
+    return res.status(401).send({ error: 'Token malformatted' });
+
+  jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+    if (err) return res.status(401).send({ error: 'Token invalid' });
+    id = decoded.userId;
+  });
+
+  const USER = `
+    query($id: uuid!) {
+      users(where:{id: {_eq: $id}}) { email, password }
+    }
+  `
+
+  const SET_USER_PASSWORD = `
+    mutation($id: uuid!, $password: String!) {
+      update_users(
+        where: {
+          id: { _eq: $id }
+        },
+        _set: {
+          password: $password
+        }
+      ) { affected_rows }
+    }
+  `
+ let user = null;
+  try {
+    user = await graphql.request(USER, { id }).then(data => {
+      return data.users[0];
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Erro durante a requisição." });
+  }
+
+  if (!user) res.status(404).json({ message: "Usuário não encontrado." });
+
+  const valid = await bcrypt.compare(oldPassword, user.password)
+
+  if (!valid) res.status(404).json({ message: "Senha antiga inválida." });
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+  try {
+    await graphql.request(SET_USER_PASSWORD, { id, password: hashedPassword }).then(() => {
+      return true;
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Erro durante a requisição." });
+  }
+
+  const newEmail = {
+    from: "CMS MedeirosTEC <contato@medeirostec.com.br>",
+    to: user.email,
+    subject: "Troca da senha",
+    text:
+      `Sua senha foi trocada, se você efetuou a troca, ignore esse email.`
+  };
+
+  mail.sendMail(newEmail, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email enviado: " + info.response);
+    }
+  });
+
+  return res.status(200).json({ message: "Senha alterada com sucesso!" });
+}
+
 const getUserId = (req) => {
   const Authorization = req.get('Authorization') || ''
   if (Authorization) {
@@ -146,4 +300,4 @@ const me = async function(req, res, next) {
 
 }
 
-module.exports = { login, signup, me }
+module.exports = { login, signup, me, recoveryPassword, changePassword }
