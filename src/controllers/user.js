@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid/v4');
+const moment = require('moment');
 
 const mail = require("../config/mail");
 const graphql = require('../config/graphql');
@@ -10,7 +11,7 @@ const login = async function(req, res, next) {
 
   const LOGIN = `
     query($email: String) {
-      users(where:{email: {_eq: $email}}) { id, name, password }
+      users(where:{email: {_eq: $email}}) { id, name, password, date_limit }
     }
   `
   const user = await graphql.request(LOGIN, { email }).then(data => {
@@ -51,7 +52,7 @@ const signup = async function(req, res, next) {
   const { name, email, password } = req.body;
 
   const SIGNUP = `
-    mutation($id: uuid!, $name: String!, $email: String!, $password: String!) {
+    mutation($id: uuid!, $name: String!, $email: String!, $password: String!, $date_limit: date!) {
       insert_users(objects: { id: $id, name: $name, email: $email, password: $password }) { returning { id }}
     }
   `
@@ -61,7 +62,8 @@ const signup = async function(req, res, next) {
   //TODO: Validation!
   let user = null;
   try {
-    user = await graphql.request(SIGNUP, { id, name, email, password: hashedPassword }).then(data => {
+    const date_limit = moment().add(1, 'M');
+    user = await graphql.request(SIGNUP, { id, name, email, password: hashedPassword, date_limit }).then(data => {
       return data.insert_users.returning[0]
     })
   } catch(error) {
