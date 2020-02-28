@@ -180,7 +180,7 @@ const recoveryPassword = async function (req, res) {
 
 const update = async function (req, res) {
   const UPDATE_USER = `
-    mutation($id: uuid!, $name: String!, $social_name: String!, $fantasy_name: String!, $email: String, $doc: String, $phone: String, $address: String, $neighborhood: String, $city: String, $state: String, $zip: String, $logo: String) {
+    mutation($id: uuid!, $name: String!, $social_name: String, $fantasy_name: String, $email: String!, $doc: String, $phone: String, $address: String, $neighborhood: String, $city: String, $state: String, $zip: String, $logo: String) {
       update_users(
         where: {
           id: { _eq: $id }
@@ -191,13 +191,11 @@ const update = async function (req, res) {
   `
 
   try {
-    const { id } = checkJwt(req)
-    await graphql
-      .request(UPDATE_USER, { ...req.body, id })
-      .then( () => {
-        return true;
-      })
-
+    const decoded = checkJwt(req)
+    const id = decoded.userId
+    const data = { ...req.body, id }
+    const ret = await graphql.request(UPDATE_USER, data)
+    return res.status(201).json(ret);
   } catch (error) {
     return res.status(500).json({ message: error });
   }
@@ -305,39 +303,26 @@ const changePassword = async function (req, res) {
   return res.status(200).json({ message: 'Senha alterada com sucesso!' });
 }
 
-const getUserId = (req) => {
-  const Authorization = req.get('Authorization') || ''
-  if (Authorization) {
-    const token = Authorization.replace('Bearer ', '')
-    const verifiedToken = jwt.verify(token, process.env.JWT_KEY)
-    return verifiedToken.userId
-  }
-}
-
 const me = async function(req, res) {
   const ME = `
-    query($id: String) {
-      users(where:{id: {_eq: $id}}) { id, name, email }
+    query($id: uuid) {
+      users( where: {id: {_eq: $id}}) { id, name, social_name, fantasy_name, doc, email, phone, zip, address, neighborhood, city, state, logo }
     }
   `
-  const userId = getUserId(req);
-
-  if (userId) {
-    const user = await graphql.request(ME, { id: userId }).then(data => {
-      return data.users[0]
-    })
-
-    res.json(
-      {
-        data:{
-          user: user
-        }
-      }
-    );
-
-  } else {
-    res.status(404).json({ message: 'Não logado' });
+  let decoded;
+  try {
+    decoded = checkJwt(req)
+  } catch (error) {
+    return res.status(500).json({ message: error });
   }
+
+  const id = decoded.id;
+
+  const user = await graphql.request(ME, { id }).then(data => {
+    return data.users[0]
+  })
+
+  res.json(user);
 }
 
 module.exports = { login, signup, me, recoveryPassword, update, changePassword }
