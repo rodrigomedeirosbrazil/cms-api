@@ -3,10 +3,10 @@ const jwt = require('jsonwebtoken');
 const uuid = require('uuid/v4');
 const moment = require('moment');
 
-const mail = require("../config/mail");
+const mail = require('../config/mail');
 const graphql = require('../config/graphql');
 
-const login = async function(req, res, next) {
+const login = async function(req, res) {
   const { email, password } = req.body;
 
   const LOGIN = `
@@ -48,7 +48,7 @@ const login = async function(req, res, next) {
   }
 }
 
-const signup = async function(req, res, next) {
+const signup = async function(req, res) {
   const { name, email, password } = req.body;
 
   const SIGNUP = `
@@ -111,7 +111,7 @@ const signup = async function(req, res, next) {
   );
 }
 
-const recoveryPassword = async function (req, res, next) {
+const recoveryPassword = async function (req, res) {
   const { email } = req.body;
 
   const USER = `
@@ -178,28 +178,67 @@ const recoveryPassword = async function (req, res, next) {
   return res.status(200).json({ message: "Email enviado!" });
 }
 
-const changePassword = async function (req, res, next) {
-  const { oldPassword, newPassword } = req.body;
+const update = async function (req, res) {
+  const UPDATE_USER = `
+    mutation($id: uuid!, $name: String!, $social_name: String!, $fantasy_name: String!, $email: String, $doc: String, $phone: String, $address: String, $neighborhood: String, $city: String, $state: String, $zip: String, $logo: String) {
+      update_users(
+        where: {
+          id: { _eq: $id }
+        },
+        _set: {name: $name, social_name: $social_name, fantasy_name: $fantasy_name, email: $email, doc: $doc, phone: $phone, address: $address, neighborhood: $neighborhood, city: $city, state: $state, zip: $zip, logo: $logo}
+      ) { affected_rows }
+    }
+  `
+
+  try {
+    const { id } = checkJwt(req)
+    await graphql
+      .request(UPDATE_USER, { ...req.body, id })
+      .then( () => {
+        return true;
+      })
+
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+}
+
+const checkJwt = req => {
   const authHeader = req.headers.authorization;
-  let id = null;
 
   if (!authHeader)
-    return res.status(401).send({ error: 'Você precisa estar logado no sistema.' });
+    throw 'Você precisa estar logado no sistema.'
 
   const parts = authHeader.split(' ');
 
   if (!parts.length === 2)
-    return res.status(401).send({ error: 'Token error' });
+    throw 'Token error'
 
   const [scheme, token] = parts;
 
   if (!/^Bearer$/i.test(scheme))
-    return res.status(401).send({ error: 'Token malformatted' });
+    throw 'Token malformatted'
 
-  jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
-    if (err) return res.status(401).send({ error: 'Token invalid' });
-    id = decoded.userId;
-  });
+  let decodedJwt = null;
+  try {
+    decodedJwt = jwt.verify(token, process.env.JWT_KEY);
+  } catch (error) {
+    throw 'Token invalid'
+  }
+  return decodedJwt
+}
+
+const changePassword = async function (req, res) {
+  const { oldPassword, newPassword } = req.body;
+
+  let decoded;
+  try {
+    decoded = checkJwt(req)
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+
+  const id = decoded.id;
 
   const USER = `
     query($id: uuid!) {
@@ -219,6 +258,7 @@ const changePassword = async function (req, res, next) {
       ) { affected_rows }
     }
   `
+
  let user = null;
   try {
     user = await graphql.request(USER, { id }).then(data => {
@@ -226,14 +266,14 @@ const changePassword = async function (req, res, next) {
     })
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Erro durante a requisição." });
+    return res.status(500).json({ message: 'Erro durante a requisição.' });
   }
 
-  if (!user) res.status(404).json({ message: "Usuário não encontrado." });
+  if (!user) res.status(404).json({ message: 'Usuário não encontrado.' });
 
   const valid = await bcrypt.compare(oldPassword, user.password)
 
-  if (!valid) res.status(404).json({ message: "Senha antiga inválida." });
+  if (!valid) res.status(404).json({ message: 'Senha antiga inválida.' });
 
   const hashedPassword = await bcrypt.hash(newPassword, 10)
 
@@ -243,26 +283,26 @@ const changePassword = async function (req, res, next) {
     })
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Erro durante a requisição." });
+    return res.status(500).json({ message: 'Erro durante a requisição.' });
   }
 
   const newEmail = {
-    from: "CMS MedeirosTEC <contato@medeirostec.com.br>",
+    from: 'CMS MedeirosTEC <contato@medeirostec.com.br>',
     to: user.email,
-    subject: "Troca da senha",
+    subject: 'Troca da senha',
     text:
-      `Sua senha foi trocada, se você efetuou a troca, ignore esse email.`
+      'Sua senha foi trocada, se você efetuou a troca, ignore esse email.'
   };
 
   mail.sendMail(newEmail, function (error, info) {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email enviado: " + info.response);
+      console.log('Email enviado: ' + info.response);
     }
   });
 
-  return res.status(200).json({ message: "Senha alterada com sucesso!" });
+  return res.status(200).json({ message: 'Senha alterada com sucesso!' });
 }
 
 const getUserId = (req) => {
@@ -274,13 +314,13 @@ const getUserId = (req) => {
   }
 }
 
-const me = async function(req, res, next) {
+const me = async function(req, res) {
   const ME = `
     query($id: String) {
       users(where:{id: {_eq: $id}}) { id, name, email }
     }
   `
-  userId = getUserId(req);
+  const userId = getUserId(req);
 
   if (userId) {
     const user = await graphql.request(ME, { id: userId }).then(data => {
@@ -296,10 +336,8 @@ const me = async function(req, res, next) {
     );
 
   } else {
-    res.status(404).json({ message: "Não logado" });
+    res.status(404).json({ message: 'Não logado' });
   }
-
-
 }
 
-module.exports = { login, signup, me, recoveryPassword, changePassword }
+module.exports = { login, signup, me, recoveryPassword, update, changePassword }
