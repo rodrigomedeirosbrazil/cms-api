@@ -236,7 +236,7 @@ const changePassword = async function (req, res) {
     return res.status(500).json({ message: error });
   }
 
-  const id = decoded.id;
+  const id = decoded.userId;
 
   const USER = `
     query($id: uuid!) {
@@ -316,8 +316,7 @@ const me = async function(req, res) {
     return res.status(500).json({ message: error });
   }
 
-  const id = decoded.id;
-
+  const id = decoded.userId;
   const user = await graphql.request(ME, { id }).then(data => {
     return data.users[0]
   })
