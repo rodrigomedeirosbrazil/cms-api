@@ -7,6 +7,6 @@ router.post('/signup', user.signup);
 router.post('/recoveryPassword', user.recoveryPassword);
 router.post('/update', user.update);
 router.post('/changePassword', user.changePassword);
-router.post('/me', user.me);
+router.get('/me', user.me);
 
 module.exports = router;
