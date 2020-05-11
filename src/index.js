@@ -1,3 +1,5 @@
+require('dotenv/config');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -18,7 +20,7 @@ app.get('/favicon.ico', function(req, res) {
   res.sendStatus(204);
 });
 
-const baseDir = `front`
+const baseDir = 'front'
 app.use(express.static(`${baseDir}`));
 app.get('*', (req, res) => res.sendFile('index.html', { root: baseDir }))
 
@@ -31,13 +33,13 @@ app.use(function(req, res, next) {
 });
 
 // handle errors
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
 	console.log(err);
 
   if(err.status === 404)
-  	res.status(404).json({message: "Not found"});
+  	res.status(404).json({message: 'Not found'});
   else
-    res.status(500).json({message: "Something looks wrong!"});
+    res.status(500).json({message: 'Something looks wrong!'});
 
 });
 

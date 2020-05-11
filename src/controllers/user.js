@@ -18,7 +18,7 @@ const login = async function(req, res) {
     return data.users[0];
   })
 
-  if (!user) res.status(404).json({message: "Email não encontrado"});
+  if (!user) res.status(404).json({message: 'Email não encontrado'});
 
   const valid = await bcrypt.compare(password, user.password)
 
@@ -44,7 +44,7 @@ const login = async function(req, res) {
       }
     );
   } else {
-    res.status(404).json({message: "Senha inválida"});
+    res.status(404).json({message: 'Senha inválida'});
   }
 }
 
