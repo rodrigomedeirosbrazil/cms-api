@@ -93,13 +93,12 @@ const signup = async function(req, res) {
       'Parabéns por começar a utilizar o nosso sistema.\nQualquer dúvida é só entrar em contato.'
   };
 
-  mail.sendMail(newEmail, function(error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email enviado: ' + info.response);
-    }
-  });
+  try {
+    await mail.sendMail(newEmail);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Email não foi enviado' + error });
+  }
 
   res.json(
     {
@@ -167,14 +166,12 @@ const recoveryPassword = async function (req, res) {
       `
   };
 
-  mail.sendMail(newEmail, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email enviado: ' + info.response);
-    }
-  });
-
+  try {
+    await mail.sendMail(newEmail);
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Email não foi enviado' + error });
+  }
   return res.status(200).json({ message: 'Email enviado!' });
 }
 
@@ -292,13 +289,12 @@ const changePassword = async function (req, res) {
       'Sua senha foi trocada, se você efetuou a troca, ignore esse email.'
   };
 
-  mail.sendMail(newEmail, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email enviado: ' + info.response);
-    }
-  });
+  try {
+    await mail.sendMail(newEmail);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Email não foi enviado' + error });
+  }
 
   return res.status(200).json({ message: 'Senha alterada com sucesso!' });
 }
