@@ -68,10 +68,10 @@ const signup = async function(req, res) {
     })
   } catch(error) {
     console.log(error);
-    return res.status(500).json({ message: "Erro durante a requisição" });
+    return res.status(500).json({ message: 'Erro durante a requisição' });
   }
 
-  if (!user) res.status(404).json({message: "Login incorreto."});
+  if (!user) res.status(404).json({message: 'Login incorreto.'});
 
   const token = jwt.sign({
     userId: user.id,
@@ -86,18 +86,18 @@ const signup = async function(req, res) {
   delete user.password;
 
   const newEmail = {
-    from: "CMS MedeirosTEC <contato@medeirostec.com.br>",
+    from: 'CMS MedeirosTEC <contato@medeirostec.com.br>',
     to: email,
-    subject: "Seja bem vindo ao CMS da MedeirosTEC!",
+    subject: 'Seja bem vindo ao CMS da MedeirosTEC!',
     text:
-      "Parabéns por começar a utilizar o nosso sistema.\nQualquer dúvida é só entrar em contato."
+      'Parabéns por começar a utilizar o nosso sistema.\nQualquer dúvida é só entrar em contato.'
   };
 
   mail.sendMail(newEmail, function(error, info) {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email enviado: " + info.response);
+      console.log('Email enviado: ' + info.response);
     }
   });
 
@@ -140,10 +140,10 @@ const recoveryPassword = async function (req, res) {
     })
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Erro durante a requisição" });
+    return res.status(500).json({ message: 'Erro durante a requisição' });
   }
 
-  if (!user) res.status(404).json({ message: "Email não encontrado" });
+  if (!user) res.status(404).json({ message: 'Email não encontrado' });
 
   const newPassword = uuid();
   const hashedPassword = await bcrypt.hash(newPassword, 10)
@@ -154,13 +154,13 @@ const recoveryPassword = async function (req, res) {
     })
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Erro durante a requisição" });
+    return res.status(500).json({ message: 'Erro durante a requisição' });
   }
 
   const newEmail = {
-    from: "CMS MedeirosTEC <contato@medeirostec.com.br>",
+    from: 'CMS MedeirosTEC <contato@medeirostec.com.br>',
     to: email,
-    subject: "Recuperação da senha",
+    subject: 'Recuperação da senha',
     text:
       `Você pediu a recuperação da senha, segue a senha que foi gerada:
       ${newPassword}
@@ -171,11 +171,11 @@ const recoveryPassword = async function (req, res) {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email enviado: " + info.response);
+      console.log('Email enviado: ' + info.response);
     }
   });
 
-  return res.status(200).json({ message: "Email enviado!" });
+  return res.status(200).json({ message: 'Email enviado!' });
 }
 
 const update = async function (req, res) {
