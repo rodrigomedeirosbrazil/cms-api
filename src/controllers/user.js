@@ -67,8 +67,12 @@ const signup = async function(req, res) {
       return data.insert_users.returning[0]
     })
   } catch(error) {
-    console.log(error);
-    return res.status(500).json({ message: 'Erro durante a requisição' });
+    console.log(JSON.stringify(error, undefined, 2));
+    if (error.response.errors[0].extensions.code === 'constraint-violation') {
+      return res.status(400).json({ message: 'Email já cadastrado' });
+    } else {
+      return res.status(500).json({ message: 'Erro durante a requisição' });
+    }
   }
 
   if (!user) res.status(404).json({message: 'Login incorreto.'});
