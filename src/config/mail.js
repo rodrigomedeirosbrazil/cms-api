@@ -1,12 +1,14 @@
 const nodemailer = require('nodemailer');
 
 const mail = nodemailer.createTransport({
-  service: 'Gmail',
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.SMTP_USERNAME,
     pass: process.env.SMTP_PASSWORD
   },
-  connectionTimeout: 10000,
+  tls: { rejectUnauthorized: false }
 });
 
 module.exports = mail;
