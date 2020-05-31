@@ -20,10 +20,7 @@ app.get('/favicon.ico', function(req, res) {
   res.sendStatus(204);
 });
 
-const baseDir = 'front'
-app.use(express.static(`${baseDir}`));
-app.get('*', (req, res) => res.sendFile('index.html', { root: baseDir }))
-
+app.get('*', (req, res) => res.redirect('https://cms.medeirostec.com.br'))
 // express doesn't consider not found 404 as an error so we need to handle 404 it explicitly
 // handle 404 error
 app.use(function(req, res, next) {
