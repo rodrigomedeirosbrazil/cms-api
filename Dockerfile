@@ -1,17 +1,28 @@
-FROM node:alpine
+# FROM node:alpine
+FROM hasura/graphql-engine:v1.3.3-centos
+
+RUN yum update -y && yum install -y yum-utils curl nss epel-release\
+    && curl -sL https://rpm.nodesource.com/setup_14.x | bash - \
+    && yum install -y               \
+    vim                             \
+    supervisor                      \
+    nodejs                          \
+    nginx                           \
+    wget &&                         \
+    yum clean all
 
 WORKDIR /usr/app
 
 # Install app dependencies
-COPY package.json yarn.lock ./
-RUN yarn install && yarn cache clean
-
-RUN apk update && apk add --no-cache supervisor bash
+COPY package.json ./
+RUN npm install && npm cache clean --force
 
 # Bundle app source
 COPY . .
 
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
+COPY nginx_reverse_proxy.conf /etc/nginx/nginx.conf
+COPY nginx_proxy.conf /etc/nginx/includes/proxy.conf
 COPY supervisord.conf /etc/supervisord.conf
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
