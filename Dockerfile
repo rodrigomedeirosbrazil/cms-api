@@ -22,7 +22,11 @@ COPY . .
 
 # RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-COPY nginx_reverse_proxy.conf /etc/nginx/nginx.conf
+COPY nginx_reverse_proxy.conf /etc/nginx/nginx.conf.template
 COPY nginx_proxy.conf /etc/nginx/includes/proxy.conf
-COPY supervisord.conf /etc/supervisord.conf
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+COPY supervisord.conf /etc/supervisord.conf.template
+
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
