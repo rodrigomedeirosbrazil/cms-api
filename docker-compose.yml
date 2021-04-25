@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  app:
+    container_name: cms-medeirostec
+    build:
+        context: ./
+    environment:
+      - DATABASE_URL=postgres://acyqyxgulkkjgf:7ac99e0ea818b201ca8d0ef38eb3a3bb736aecd6deb96ddaa9212a68e64d68ce@ec2-35-169-254-43.compute-1.amazonaws.com:5432/d543f0ph2v0ia
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_ADMIN_SECRET=DEbqWHmvAeqgSJzzbJwgfzfXiUecidAQ
+      - HASURA_GRAPHQL_JWT_SECRET={"type":"HS256","key":"jUnqGMjK7qvjBuvax2UCqjkzn2Q9Dm7Q"}
+      - PORT=3333
+    ports:
+      - "8080:3333"

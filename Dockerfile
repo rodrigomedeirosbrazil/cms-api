@@ -20,8 +20,6 @@ RUN npm install && npm cache clean --force
 # Bundle app source
 COPY . .
 
-# RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
 COPY nginx_reverse_proxy.conf /etc/nginx/nginx.conf.template
 COPY nginx_proxy.conf /etc/nginx/includes/proxy.conf
 COPY supervisord.conf /etc/supervisord.conf.template
@@ -29,4 +27,4 @@ COPY supervisord.conf /etc/supervisord.conf.template
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["/docker-entrypoint.sh"]
