@@ -2,7 +2,7 @@ require('dotenv/config');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+// const cors = require('cors');
 
 const authRoute = require('./routes/auth');
 
@@ -10,7 +10,7 @@ const PORT = 5000;
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
