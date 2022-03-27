@@ -1,7 +1,9 @@
 # FROM node:alpine
 FROM hasura/graphql-engine:v1.3.3-centos
 
-RUN yum update -y && yum install -y yum-utils curl nss epel-release\
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
+    yum update -y && yum install -y yum-utils curl nss epel-release\
     && curl -sL https://rpm.nodesource.com/setup_14.x | bash - \
     && yum install -y               \
     vim                             \
